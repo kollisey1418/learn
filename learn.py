@@ -37,4 +37,5 @@ else:
     print(f'''
             {name} you are adult!
             And your coming of age was: {age_d} days ago
+            Or {age_y} years and {age_m} month ago
         ''')
