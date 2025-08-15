@@ -40,28 +40,28 @@ for cash_1 in range(5):
         except ValueError:
             logging.warning(f"Wrong date formate: {date}")
             print("You have entered date in an invalid format date. Please, enter date in YY-MM-DD")
-    boreti_start = int(input("Boreti start number: "))
-    boreti_end = int(input("Boreti end number: "))
-    rafailovichi_start = int(input("Rafailovichi start number: "))
-    rafailovichi_end = int(input("Rafailovichi end number: "))
-    stefan_start = int(input("Sveti Stefan start number: "))
-    stefan_end = int(input("Sveti Stefan end number: "))
-    cards_b = int(boreti_end - boreti_start + 1) if boreti_end > boreti_start else 0
-    cards_r = int(rafailovichi_end - rafailovichi_start + 1) if rafailovichi_end > rafailovichi_start else 0
-    cards_s = int(stefan_end - stefan_start + 1) if stefan_end > stefan_start else 0
-    result_b = float(cards_b * 1.5)
-    result_r = float(cards_r * 2)
-    result_s = float(cards_s * 2.5)
-    sum_result = float(result_b + result_r + result_s)
-    print(f'''
-          Boreti: {result_b}€ ({cards_b} cards)
-          Rafailovichi {result_r}€ ({cards_r} cards)
-          Sveti Stefan {result_s}€ ({cards_s} cards)
-          Total: {sum_result}€
+
+    routes = [
+        ("boreti", 1.5),
+        ("rafailovichi", 2.0),
+        ("stefan", 2.5)
+    ]
+    results = []
+    total_sum = 0.0
+    for route_name, price_per_card in routes:
+        start = int(input(f"{route_name.title()} start number: "))
+        end = int(input(f"{route_name.title()} end number: "))
+        cards = end - start + 1 if end > start else 0
+        sum_result = cards * price_per_card
+        total_sum += sum_result
+        results.append((route_name, start, end, cards, sum_result))
+        print(f'''
+          {route_name.title()}: {sum_result}€ ({cards} cards)
           ''')
-    cursor.execute("INSERT INTO boreti (driver_id, date, ticket_start, ticket_end, sum_tick) VALUES (%s, %s, %s, %s, %s)", (drivers_id, date, boreti_start, boreti_end, cards_b))
-    cursor.execute("INSERT INTO rafailovichi (driver_id, date, ticket_start, ticket_end, sum_tick) VALUES (%s, %s, %s, %s, %s)", (drivers_id, date, rafailovichi_start, rafailovichi_end, cards_r))
-    cursor.execute("INSERT INTO stefan (driver_id, date, ticket_start, ticket_end, sum_tick) VALUES (%s, %s, %s, %s, %s)", (drivers_id, date, stefan_start, stefan_end, cards_s))
+    print(f"Total: {total_sum}€")
+
+    for route_name, start, end, cards, _sum in results:
+        cursor.execute(f"INSERT INTO {route_name.title()} (driver_id, date, ticket_start, ticket_end, sum_tick) VALUES (%s, %s, %s, %s, %s)", (drivers_id, date, start, end, cards))
 
 # fuel consumption
     mileage = float(input("Kilometers per day: "))  
